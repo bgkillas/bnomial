@@ -40,7 +40,12 @@ fn make_image(base: u8, n: u16, layer: Option<u8>) -> RgbImage {
                     color = color.shift_hue(180.0);
                 }
             } else {
-                color = color.shift_hue((360.0 * v.rem_euclid(base as Num) as f32) / base as f32);
+                let rem = v.rem_euclid(base as Num);
+                if rem == 0 {
+                    color = Oklch::from_color(Srgb::new(0.0, 0.0, 0.0));
+                } else {
+                    color = color.shift_hue((360.0 * rem as f32) / (base - 1) as f32);
+                }
             }
             let rgb = Srgb::<f32>::from_color(color);
             let rgb = [rgb.red, rgb.green, rgb.blue].map(|v| (255.0 * v) as u8);
