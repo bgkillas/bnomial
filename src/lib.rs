@@ -9,13 +9,19 @@ pub fn start() {
     std::panic::set_hook(Box::new(console_error_panic_hook::hook));
     let window = web_sys::window().unwrap();
     let hash = window.location().hash().unwrap();
-    let mut split = hash[1..].split(",");
-    let base: u8 = split.next().and_then(|s| s.parse().ok()).unwrap_or(3);
-    let n = split
-        .next()
-        .and_then(|s| s.parse().ok())
-        .unwrap_or_else(|| window.inner_height().unwrap().as_f64().unwrap() as u16);
-    let layer = split.next().and_then(|s| s.parse().ok());
+    let mut base = 3;
+    let mut n = window.inner_height().unwrap().as_f64().unwrap() as u16;
+    let mut layer = None;
+    if !hash.is_empty() {
+        let mut split = hash[1..].split(",");
+        if let Some(next) = split.next().and_then(|s| s.parse().ok()) {
+            base = next;
+        }
+        if let Some(next) = split.next().and_then(|s| s.parse().ok()) {
+            n = next;
+        }
+        layer = split.next().and_then(|s| s.parse().ok());
+    }
     let image = make_image(base, n, layer);
     draw_image(&image);
 }
