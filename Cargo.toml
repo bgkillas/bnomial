@@ -3,10 +3,24 @@ name = "bnomial"
 version = "0.1.0"
 edition = "2024"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+name = "bnomial_lib"
+
+[profile.release]
+lto = true
+strip = true
+panic = "abort"
+codegen-units = 1
+opt-level = 3
+
 [dependencies]
 image={version = "0.25.10", default-features = false, features = ["png"]}
 palette = {version = "0.7.7", default-features = false, features = ["std"]}
 num-bigint = {version = "0.5.1", default-features = false}
+wasm-bindgen = "0.2.128"
+web-sys = { version = "0.3.105", features = ["CanvasRenderingContext2d", "HtmlCanvasElement", "ImageData", "Window", "Document", "Location", "console"] }
+console_error_panic_hook = "0.1.7"
 
 [dev-dependencies]
 primes = {version = "0.4.0", default-features = false}
