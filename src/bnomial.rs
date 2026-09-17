@@ -2,12 +2,12 @@ use image::RgbaImage;
 use num_bigint::BigInt;
 use palette::{FromColor, Oklch, ShiftHue, Srgb};
 pub type Num = u8;
-pub fn make_image(base: u8, n: u16, layer: Option<u8>) -> RgbaImage {
+pub fn make_image(base: u8, n: u32, layer: Option<u8>) -> RgbaImage {
     let bnomials = bnomials(base, n);
     let width_mult: usize = 2;
     let height_mult = width_mult;
-    let width = width_mult as u32 * (base as u32 - 1) * n as u32;
-    let height = height_mult as u32 * n as u32;
+    let width = width_mult as u32 * (base as u32 - 1) * n;
+    let height = height_mult as u32 * n;
     let mut image = RgbaImage::new(width, height);
     for (i, row) in bnomials.into_iter().enumerate() {
         for (j, v) in row.iter().enumerate() {
@@ -37,8 +37,8 @@ pub fn make_image(base: u8, n: u16, layer: Option<u8>) -> RgbaImage {
     }
     image
 }
-pub fn bnomials(base: u8, n: u16) -> Box<[Box<[Num]>]> {
-    fn get_layer(base: u8, last: &[Num], n: u16) -> Box<[Num]> {
+pub fn bnomials(base: u8, n: u32) -> Box<[Box<[Num]>]> {
+    fn get_layer(base: u8, last: &[Num], n: u32) -> Box<[Num]> {
         let mut vec = Vec::with_capacity((base as usize - 1) * n as usize + 1);
         for k in 0..vec.capacity() {
             vec.push(
@@ -54,22 +54,22 @@ pub fn bnomials(base: u8, n: u16) -> Box<[Box<[Num]>]> {
     vec.push(vec![1].into_boxed_slice());
     for n in 1..vec.capacity() {
         let last = vec.last().unwrap();
-        let set = get_layer(base, last, n as u16);
+        let set = get_layer(base, last, n as u32);
         vec.push(set);
     }
     vec.into_boxed_slice()
 }
 #[allow(unused)]
-pub fn bnomial(base: u8, n: u16, k: u16) -> BigInt {
+pub fn bnomial(base: u8, n: u32, k: u32) -> BigInt {
     if n == 0 {
         return BigInt::new_const(1);
     }
-    let inner = |i: u16| binomial(n, i) * binomial(n + k - (i * base as u16 + 1), n - 1);
-    let mapped = |i: u16| if i.is_multiple_of(2) { 1 } else { -1 } * inner(i);
-    (0..=k / base as u16).map(mapped).sum()
+    let inner = |i: u32| binomial(n, i) * binomial(n + k - (i * base as u32 + 1), n - 1);
+    let mapped = |i: u32| if i.is_multiple_of(2) { 1 } else { -1 } * inner(i);
+    (0..=k / base as u32).map(mapped).sum()
 }
 #[allow(unused)]
-pub fn binomial(n: u16, k: u16) -> BigInt {
+pub fn binomial(n: u32, k: u32) -> BigInt {
     let mut value = BigInt::new_const(1);
     for v in (n + 1) - k..=n {
         value *= v;
@@ -88,13 +88,13 @@ pub fn test() {
             let m = (base.pow(n) - 1) / (base - 1);
             for k in 0..=m * (base - 1) {
                 assert_eq!(
-                    bnomial(base as u8, m as u16, k as u16) % base,
+                    bnomial(base as u8, m as u32, k as u32) % base,
                     BigInt::new_const(1)
                 );
             }
             let m = base.pow(n);
             let sum = (0..=m * (base - 1))
-                .map(|k| bnomial(base as u8, m as u16, k as u16) % base)
+                .map(|k| bnomial(base as u8, m as u32, k as u32) % base)
                 .sum::<BigInt>();
             assert_eq!(sum, BigInt::from(base))
         }

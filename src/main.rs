@@ -7,7 +7,7 @@ fn main() {
     let Some(base) = args.nth(1).and_then(|s| s.parse::<u8>().ok()) else {
         return;
     };
-    let Some(n) = args.next().and_then(|s| s.parse::<u16>().ok()) else {
+    let Some(n) = args.next().and_then(|s| s.parse::<u32>().ok()) else {
         return;
     };
     let layer = args.next().and_then(|s| s.parse::<u8>().ok());
@@ -17,7 +17,7 @@ fn main() {
             println!("{row:?}");
         }
         for n in 0..=n {
-            let set = (0..=(base as u16 - 1) * n)
+            let set = (0..=(base as u32 - 1) * n)
                 .map(|k| bnomial(base, n, k))
                 .collect::<Vec<_>>();
             println!("{set:04?}");

@@ -10,7 +10,7 @@ pub fn start() {
     let window = web_sys::window().unwrap();
     let hash = window.location().hash().unwrap();
     let mut base = 3;
-    let mut n = window.inner_height().unwrap().as_f64().unwrap() as u16;
+    let mut n = window.inner_height().unwrap().as_f64().unwrap() as u32;
     let mut layer = None;
     if !hash.is_empty() {
         let mut split = hash[1..].split(",");
