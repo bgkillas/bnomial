@@ -6,3 +6,7 @@ edition = "2024"
 [dependencies]
 image={version = "0.25.10", default-features = false, features = ["png"]}
 palette = {version = "0.7.7", default-features = false, features = ["std"]}
+num-bigint = {version = "0.5.1", default-features = false}
+
+[dev-dependencies]
+primes = {version = "0.4.0", default-features = false}

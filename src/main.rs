@@ -1,4 +1,5 @@
 use image::{ImageFormat, RgbImage};
+use num_bigint::BigInt;
 use palette::{FromColor, Oklch, ShiftHue, Srgb};
 use std::env::args;
 use std::io::{Cursor, IsTerminal, Write, stdout};
@@ -11,19 +12,20 @@ fn main() {
     let Some(n) = args.next().and_then(|s| s.parse::<u16>().ok()) else {
         return;
     };
+    let layer = args.next().and_then(|s| s.parse::<u8>().ok());
     if stdout().is_terminal() {
         let bnomials = bnomials(base, n);
         for row in bnomials {
             println!("{row:?}");
         }
     } else {
-        let image = make_image(base, n);
+        let image = make_image(base, n, layer);
         let mut buf = Cursor::new(Vec::new());
         image.write_to(&mut buf, ImageFormat::Png).unwrap();
         stdout().write_all(buf.get_ref()).unwrap();
     }
 }
-fn make_image(base: u8, n: u16) -> RgbImage {
+fn make_image(base: u8, n: u16, layer: Option<u8>) -> RgbImage {
     let bnomials = bnomials(base, n);
     let width_mult: usize = 2;
     let height_mult = width_mult;
@@ -33,7 +35,13 @@ fn make_image(base: u8, n: u16) -> RgbImage {
     for (i, row) in bnomials.into_iter().enumerate() {
         for (j, v) in row.iter().enumerate() {
             let mut color = Oklch::from_color(Srgb::new(1.0, 0.0, 0.0));
-            color = color.shift_hue((360.0 * v.rem_euclid(base as Num) as f32) / base as f32);
+            if let Some(layer) = layer {
+                if v.rem_euclid(base as Num) == layer {
+                    color = color.shift_hue(180.0);
+                }
+            } else {
+                color = color.shift_hue((360.0 * v.rem_euclid(base as Num) as f32) / base as f32);
+            }
             let rgb = Srgb::<f32>::from_color(color);
             let rgb = [rgb.red, rgb.green, rgb.blue].map(|v| (255.0 * v) as u8);
             for y in height_mult * i..height_mult * (i + 1) {
@@ -68,4 +76,45 @@ fn bnomials(base: u8, n: u16) -> Box<[Box<[Num]>]> {
         vec.push(set);
     }
     vec.into_boxed_slice()
+}
+#[allow(unused)]
+fn bnomial(base: u8, n: u16, k: u16) -> BigInt {
+    if n == 0 {
+        return BigInt::new_const(1);
+    }
+    let inner = |i: u16| binomial(n, i) * binomial(n + k - (i * base as u16 + 1), n - 1);
+    let mapped = |i: u16| if i.is_multiple_of(2) { 1 } else { -1 } * inner(i);
+    (0..=k / base as u16).map(mapped).sum()
+}
+#[allow(unused)]
+fn binomial(n: u16, k: u16) -> BigInt {
+    let mut value = BigInt::new_const(1);
+    for v in (n + 1) - k..=n {
+        value *= v;
+    }
+    for v in 2..=k {
+        value /= v;
+    }
+    value
+}
+#[test]
+fn test() {
+    use primes::{PrimeSet, Sieve};
+    let mut pset = Sieve::new();
+    for base in pset.iter().take(3) {
+        for n in 0..=3 {
+            let m = (base.pow(n) - 1) / (base - 1);
+            for k in 0..=m * (base - 1) {
+                assert_eq!(
+                    bnomial(base as u8, m as u16, k as u16) % base,
+                    BigInt::new_const(1)
+                );
+            }
+            let m = base.pow(n);
+            let sum = (0..=m * (base - 1))
+                .map(|k| bnomial(base as u8, m as u16, k as u16) % base)
+                .sum::<BigInt>();
+            assert_eq!(sum, BigInt::from(base))
+        }
+    }
 }
