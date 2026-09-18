@@ -76,7 +76,7 @@ $v_3$ is from doing both $x_1$ and $x_2$ at the same time
 
 so we have $binom(k+n-1,n-1)-2binom(n-1+k-b,n-1)+binom(n-1+k-2b,n-1)$
 
-note that $binom(-n,k)=0$ for $n>0$
+note that $binom(-n,k)=binom(n,n+l)=binom(n,-l)=0$ for $n,l>0,0<=k<=n$
 
 from this we may hope that
 
@@ -94,26 +94,104 @@ $sum_(i=0)^(n-1) (-1)^i binom(n-1,i)binom(n-2+k'-i b,n-2)$
 
 solutions, we then apply
 
-#pagebreak()
+TODO
 
-= Problems
+we may also see
+
+$
+binom(n,k)_b=sum_(i=0)^(floor(k/b)) (-1)^i binom(n,i)binom(n-1+k-i b,n-1)
+$
+
+as suppose $i>floor(k/b)$, then $k-i b<0$, and therefore $binom(n-1+k-i b,n-1)=0$
+
+#pagebreak()
 
 $
 star_1
 binom(n,k)_2=binom(n,k)
 $
 
+combinatorically we may simply see that counting the amount of ways $n$ 2 sided dice sum up to $k$(LHS) is equivalent to
+the amount of subsets of a $n$ sized set of size $k$(LHS)
+
+this is simply because we may count the right side as binary, where 1 is if the element is in the subset or not, and those 1's sum upto $k$, and we see that coinsides with how we do the LHS
+
+$sum_(i=1)^n x_i=k "where" x_i in D_b$
+
+as $D_b={0,1}$.
+
+=== alternate
+
+more simply we can notice that the recursive definition of the LHS is equivalent to the recursive definition of the RHS
+
+#pagebreak()
+
 $
 star_2
-(sum_(i=0)^(b-1) x^i)^n=sum_(i=0)^(n(b-1)) x^i binom(n,i)_b
+binom(n,k)_b=binom(n,n (b-1) - k)_b
 $
+
+combinatorically we may
+
+=== alternate
+
+proof by induction
+
+#pagebreak()
 
 $
 star_3
-binom(m,k)_b equiv 1 mod b <=> b "is prime" and m=(b^n-1)/(b-1)
+(sum_(i=0)^(b-1) x^i)^n=sum_(i=0)^(n(b-1)) x^i binom(n,i)_b
 $
+
+#pagebreak()
+
+we may also define
+
+$binom(D,k)$ where $D_n={b_i : b_i in ZZ_(>0) and 1<=i<=n}$, $D'_n={b_i in D_n : i>0}$, $sum D_n = sum_(i=1)^n b_i-1$
 
 $
 star_4
+binom(D_n,k)=cases(
+    sum_(i=0)^(b_0-1) binom(D'_n,k-i) \, n>0 and 0<=k<=sum D'_n,
+    1 \, n=0 and k=0,
+    0 \, "otherwise"
+)
+$
+
+due to notation being annoying i will not prove this
+
+#pagebreak()
+
+$
+star_5
+binom(m,k)_b equiv 1 mod b <=> b "is prime" and m=(b^n-1)/(b-1)
+$
+
+unsure if actually true,
+
+this site shows those for small prime bases, as larger gets stretched too much to be noticable
+
+https://bgkillas.github.io/bnomial/#3
+
+shows a pascals triangle for $b=3$ mod $b$, you may add do "\#b,n" for n columns
+
+
+
+#pagebreak()
+
+$
+star_6
 sum_(k=0)^(m(b-1)) (binom(m, k)_b mod b) = b <=> b "is prime" and m=b^n
 $
+
+unsure if actually true, see $star_5$ for site example
+
+#pagebreak()
+
+= Related Material
+
+a different extension, https://en.wikipedia.org/wiki/Multinomial_theorem,
+see https://en.wikipedia.org/wiki/Multinomial_theorem#Generalized_Pascal's_triangle for how they relate
+
+also $binom(n,k)_b$ is sort of a "flattening" of https://en.wikipedia.org/wiki/Pascal's_pyramid

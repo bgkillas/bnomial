@@ -1,19 +1,19 @@
 use image::RgbaImage;
 use num_bigint::BigInt;
 use palette::{FromColor, Oklch, ShiftHue, Srgb};
-pub type Num = u8;
+pub type Num = u32;
 pub fn make_image(base: u8, n: u32, layer: Option<u8>) -> RgbaImage {
     let bnomials = bnomials(base, n);
     let width_mult: usize = 2;
     let height_mult = width_mult;
-    let width = width_mult as u32 * (base as u32 - 1) * n;
-    let height = height_mult as u32 * n;
+    let width = width_mult as u32 * (base as u32 - 1) * (n + 1);
+    let height = height_mult as u32 * (n + 1);
     let mut image = RgbaImage::new(width, height);
     for (i, row) in bnomials.into_iter().enumerate() {
         for (j, v) in row.iter().enumerate() {
             let mut color = Oklch::from_color(Srgb::new(1.0, 0.0, 0.0));
             if let Some(layer) = layer {
-                if v.rem_euclid(base as Num) == layer {
+                if v.rem_euclid(base as Num) as u8 == layer {
                     color = color.shift_hue(180.0);
                 }
             } else {
@@ -50,7 +50,7 @@ pub fn bnomials(base: u8, n: u32) -> Box<[Box<[Num]>]> {
         }
         vec.into_boxed_slice()
     }
-    let mut vec = Vec::with_capacity(n as usize);
+    let mut vec = Vec::with_capacity(n as usize + 1);
     vec.push(vec![1].into_boxed_slice());
     for n in 1..vec.capacity() {
         let last = vec.last().unwrap();

@@ -1,4 +1,4 @@
-use bnomial_lib::bnomial::{bnomial, bnomials, make_image};
+use bnomial_lib::bnomial::{bnomials, make_image};
 use image::ImageFormat;
 use std::env::args;
 use std::io::{Cursor, IsTerminal, Write, stdout};
@@ -15,12 +15,6 @@ fn main() {
         let bnomials = bnomials(base, n);
         for row in bnomials {
             println!("{row:?}");
-        }
-        for n in 0..=n {
-            let set = (0..=(base as u32 - 1) * n)
-                .map(|k| bnomial(base, n, k))
-                .collect::<Vec<_>>();
-            println!("{set:04?}");
         }
     } else {
         let image = make_image(base, n, layer);
