@@ -131,11 +131,44 @@ star_2
 binom(n,k)_b=binom(n,n (b-1) - k)_b
 $
 
-combinatorically we may
+combinatorically we may consider that the value the dice has been rolled to $l$ may be turned to \
+$b-1-l$, doing this for each dice shows that these both are the same
 
 === alternate
 
-proof by induction
+proof by induction, we will make a symmetry argument
+
+base case $n=0$, for $n=0$ we have 1 valid value $k=0$ and this equation trivially is true
+
+let $n$ be arbitrary
+
+assume $n-1$ want to show for $n$
+
+recall the recursive definition
+
+$binom(n, k)_b = cases(
+    sum_(i=0)^(b-1) binom(n-1,k-i)_b \, n>0 and 0<=k<=n(b-1),
+    1 \, n=0 and k=0,
+    0 \, "otherwise"
+)$
+
+consider
+
+$binom(n, n(b-1)-k)_b = cases(
+    sum_(i=0)^(b-1) binom(n-1,n(b-1)-k-i)_b \, n>0 and 0<=k<=n(b-1),
+    1 \, n=0 and k=0,
+    0 \, "otherwise"
+)$
+
+by inductive statement we have
+
+$binom(n, n(b-1)-k)_b = cases(
+    sum_(i=0)^(b-1) binom(n-1,k-i)_b \, n>0 and 0<=k<=n(b-1),
+    1 \, n=0 and k=0,
+    0 \, "otherwise"
+)$
+
+so $binom(n, k)_b=binom(n, n(b-1)-k)_b$
 
 #pagebreak()
 
@@ -143,6 +176,33 @@ $
 star_3
 (sum_(i=0)^(b-1) x^i)^n=sum_(i=0)^(n(b-1)) x^i binom(n,i)_b
 $
+
+combinatorical proof,
+
+$(sum_(i=0)^(b-1) x^i)^n$
+
+$=sum_(i_1=0)^(b-1) ... sum_(i_n=0)^(b-1) product_(j=1)^n x^(i_j)$
+
+$=sum_(i_1=0)^(b-1) ... sum_(i_n=0)^(b-1) x^(sum_j i_j)$
+
+this is equivalent to $sum_(i=1)^n x_i=k "where" x_i in D_b$, as for each specific $x^l$ we are
+finding all possible sums for $n$ dice from $0$ to $b-1$ so therefore the coeffecient is $binom(n,i)_b$ and we have
+
+$=sum_(i=0)^(n(b-1)) binom(n,i)_b x^i$
+
+=== alternate
+
+proof by strong induction, $n=0$ is trivially true
+
+let $n$ be arbitrary, assume $<n$ true, want to show $n$
+
+$(sum_(i=0)^(b-1) x^i)^n$
+
+$=(sum_(i=0)^(b-1) x^i)(sum_(i=0)^(b-1) x^i)^(n-1)$
+
+$=(sum_(i=0)^(b-1) x^i)(sum_(j=0)^((n-1)(b-1)) x^j binom(n-1,j)_b)$
+
+$=sum_(i=0)^(b-1) sum_(j=0)^((n-1)(b-1)) x^i x^j binom(n-1,j)_b$
 
 #pagebreak()
 
